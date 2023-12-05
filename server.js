@@ -15,16 +15,60 @@ const handleDelete = (e) => {
     e.target.parentNode.remove()
 }
 
-const handleEdit = (e) => {
-    console.log(e);
+// const handleEdit = (e) => {
+//     let date = new Date();
 
-    let newTodo = {
-        id: Math.floor(Math.random() * 1000 * new Date().getMilliseconds()),
-        title: input.value,
-        isDone: false,
-        date: date
+//     let editedTodo = {
+//         id: e.target.parentNode.id,
+//         title: "we don't know yet",
+//         isDone: false,
+//         date: date
+//     }
+
+//     console.log(e.target.parentNode);
+
+
+//     let editInput = document.createElement('input');
+    
+//     e.target.parentNode.appendChild(editInput);
+// }
+
+const handleEdit = (e) => {
+    const listItem = e.target.parentNode;
+    const todoId = listItem.id;
+
+    let todos = [];
+
+    if (localStorage.getItem("localstorageTodos") !== null) {
+        todos = JSON.parse(localStorage.getItem("localstorageTodos"));
     }
-}
+
+    const existingTodoIndex = todos.findIndex(todo => todo.id === Number(todoId));
+
+
+    if (existingTodoIndex !== -1) {
+        const existingTodo = todos[existingTodoIndex];
+
+        const editInput = document.createElement('input');
+        editInput.value = existingTodo.title;
+
+        const saveButton = document.createElement('button');
+        saveButton.innerHTML = 'Save';
+        saveButton.addEventListener('click', () => {
+            const updatedTitle = editInput.value;
+            existingTodo.title = updatedTitle;
+            listItem.removeChild(editInput);
+            listItem.removeChild(saveButton);
+            listItem.childNodes[0].nodeValue = updatedTitle;
+            todos[existingTodoIndex] = existingTodo;
+            localStorage.setItem("localstorageTodos", JSON.stringify(todos));
+        });
+
+        listItem.appendChild(editInput);
+        listItem.appendChild(saveButton);
+    }
+};
+
 
 
 const renderTodo = (todo) => {
